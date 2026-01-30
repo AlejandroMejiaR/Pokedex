@@ -1,25 +1,17 @@
-<!-- 
-  ARCHIVO: index.html
-  DESCRIPCIÓN: Punto de entrada de la aplicación.
-  Carga los estilos globales (fuentes, variables) y el contenedor principal.
-  NOTA: Usamos type="module" para poder usar imports de Javascript moderno.
--->
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pokedex Segura - LitElement</title>
+    <title>Pokedex with LitElement</title>
     
     <style>
-        /* DEFINICIÓN DE VARIABLES CSS (Design System simulado) */
-        /* En banca, esto vendría de una librería externa de estilos */
         :root {
-            --primary-color: #004481; /* Azul BBVA-like */
-            --secondary-color: #2dcccd;
-            --background-color: #f4f4f4;
-            --text-color: #121212;
-            --card-bg: #ffffff;
+            --primary-color: #000000;
+            --secondary-color: #000000;
+            --background-color: #910101;
+            --text-color: #232323;
+            --card-bg: #c5c5c5;
             --spacing-m: 16px;
             --font-family: 'Arial', sans-serif;
         }
@@ -33,13 +25,7 @@
     </style>
 </head>
 <body>
-    <!-- 
-      Aquí instanciamos nuestro "Smart Component" o Container.
-      Él se encargará de pintar todo lo demás dentro de él.
-    -->
     <pokedex-manager></pokedex-manager>
-
-    <!-- Importamos el archivo principal de lógica -->
     <script type="module" src="./src/containers/pokedex-manager.js"></script>
 </body>
 </html>

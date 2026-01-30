@@ -21,7 +21,10 @@ export class PokedexManager extends LitElement {
         pokemons: { type: Array },      // Lista de datos
         view: { type: String },         // Control de navegación: 'list' | 'detail'
         selectedPokemon: { type: Object }, // Datos del pokemon seleccionado
-        isLoading: { type: Boolean }
+        isLoading: { type: Boolean },
+
+        currentPage: { type: Number},
+        itemsPerPage: { type: Number}
     };
 
     static styles = css`
@@ -33,14 +36,42 @@ export class PokedexManager extends LitElement {
         }
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
             gap: 20px;
             padding: 20px 0;
         }
         h1 {
-            color: var(--primary-color);
+            color: #ffffff;
             text-align: center;
         }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            align-items: center;
+        }
+
+        button.page-btn {
+            padding: 10px 20px;
+            background: var(--primary-color, #004481);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button.page-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .page-info {
+            font-weight: bold;
+        }
+
         .loading {
             text-align: center;
             font-size: 1.2rem;
@@ -54,6 +85,10 @@ export class PokedexManager extends LitElement {
         this.view = 'list'; // Estado inicial
         this.selectedPokemon = null;
         this.isLoading = false;
+
+        //paginado
+        this.currentPage = 1;
+        this.itemsPerPage = 16;
         
         // Instanciamos el servicio (Inyección de dependencias manual)
         this.pokemonService = new PokemonService();
@@ -65,10 +100,34 @@ export class PokedexManager extends LitElement {
      * Ideal para llamadas a API iniciales.
      */
     async firstUpdated() {
+        this._loadData();
         this.isLoading = true;
         // Llamada asíncrona al servicio
-        this.pokemons = await this.pokemonService.getPokemonList(20);
         this.isLoading = false;
+    }
+
+    async _loadData() {
+        this.isLoading = true;
+        //Calular la pagina actual del paginado
+        const offset = (this.currentPage - 1) * this.itemsPerPage;
+        
+        //obtener desde el servicio con los parametros dinamicos LIMIT Y OFFSET
+        this.pokemons = await this.pokemonService.getPokemonList(this.itemsPerPage, offset);
+        
+        this.isLoading = false;
+    }
+
+    // Funciones para cambiar de página
+    _nextPage() {
+        this.currentPage++;
+        this._loadData(); // Recargamos datos
+    }
+
+    _prevPage() {
+        if (this.currentPage > 1) {
+            this.currentPage--;
+            this._loadData(); // Recargamos datos
+        }
     }
 
     /**
@@ -115,6 +174,23 @@ export class PokedexManager extends LitElement {
                         @card-clicked="${this._onCardClicked}">
                     </pokemon-card>
                 `)}
+            </div>
+            <!-- CONTROLES DE PAGINACIÓN -->
+            <div class="pagination">
+                <button 
+                    class="page-btn" 
+                    @click="${this._prevPage}" 
+                    ?disabled="${this.currentPage === 1}">
+                    Anterior
+                </button>
+                
+                <span class="page-info">Página ${this.currentPage}</span>
+                
+                <button 
+                    class="page-btn" 
+                    @click="${this._nextPage}">
+                    Siguiente
+                </button>
             </div>
         `;
     }

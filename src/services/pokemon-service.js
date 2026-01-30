@@ -18,13 +18,13 @@ export class PokemonService {
      * Obtiene una lista inicial de Pokemons y sus detalles básicos.
      * En banca, esto equivaldría a obtener la lista de cuentas del usuario.
      * @param {number} limit - Cantidad de elementos a traer.
+     * @param {number} offset - Desplazamiento para paginación.
      */
-    async getPokemonList(limit = 20) {
+    async getPokemonList(limit = 16, offset = 0) {
         try {
             // 1. Petición a la lista general
-            const response = await fetch(`${this.baseUrl}?limit=${limit}`);
-            if (!response.ok) throw new Error('Error de red al obtener lista');
-            
+            const url = `${this.baseUrl}?limit=${limit}&offset=${offset}`;
+            const response = await fetch(url);
             const data = await response.json();
 
             // 2. Mapeo de promesas: La lista inicial no tiene la foto, 
